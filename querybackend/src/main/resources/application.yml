@@ -3,4 +3,17 @@ spring:
     name: queryelasticspringai
   ai:
     openai:
-      api-key: dummy
+      api-key: ${OPENAI_API_KEY}
+  datasource:
+    url: jdbc:postgresql://localhost:5432/querybackend
+    username: postgres
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+  flyway:
+    enabled: true
+
+elasticsearch:
+  url: http://localhost:9200
