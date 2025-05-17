@@ -10,7 +10,7 @@ export const api = {
     },
 
     searchOrders: async (query: string): Promise<Order[]> => {
-        const response = await axios.post(`${API_BASE_URL}/elastic/query`, query);
+        const response = await axios.post(`${API_BASE_URL}/elastic/query`, {"query": query});
         return response.data;
     },
 

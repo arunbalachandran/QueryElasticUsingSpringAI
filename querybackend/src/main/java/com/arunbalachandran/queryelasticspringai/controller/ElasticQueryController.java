@@ -1,6 +1,7 @@
 package com.arunbalachandran.queryelasticspringai.controller;
 
 import com.arunbalachandran.queryelasticspringai.dto.OrderDTO;
+import com.arunbalachandran.queryelasticspringai.dto.QueryDTO;
 import com.arunbalachandran.queryelasticspringai.service.PromptService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class ElasticQueryController {
     private PromptService promptService;
 
     @PostMapping("/query")
-    public ResponseEntity<List<OrderDTO>> queryElastic(@RequestBody String prompt) {
-        return ResponseEntity.ok(promptService.processPrompt(prompt));
+    public ResponseEntity<List<OrderDTO>> queryElastic(@RequestBody QueryDTO userQuery) {
+        return ResponseEntity.ok(promptService.processPrompt(userQuery.getQuery()));
     }
 }

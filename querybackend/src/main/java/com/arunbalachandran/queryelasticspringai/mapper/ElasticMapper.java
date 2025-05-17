@@ -19,7 +19,7 @@ public class ElasticMapper {
         var hitsList = (java.util.List<Map<String, Object>>) hitsMap.get(HITS);
 
         if (hitsList.isEmpty()) {
-            return null;
+            return List.of();
         }
 
         return hitsList.stream()

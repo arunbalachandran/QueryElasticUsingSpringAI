@@ -89,7 +89,7 @@ function App() {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                        sx={{ bgcolor: 'white', borderRadius: 1 }}
+                        sx={{ bgcolor: 'white', boxShadow: 'none' }}
                     />
                     <Button
                         variant="contained"
