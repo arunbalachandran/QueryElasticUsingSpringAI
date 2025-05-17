@@ -1,0 +1,292 @@
+{
+	"info": {
+		"_postman_id": "ec96e445-3f0a-47e0-9869-d6de502f7d79",
+		"name": "QueryElasticSpringAI",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3095343"
+	},
+	"item": [
+		{
+			"name": "Add Order",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"productName\": \"Test Product\",\r\n  \"productQty\": 1,\r\n  \"productPrice\": 99.99,\r\n  \"productDescription\": \"A test product\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove Order",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Get Orders (Postgres)",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Orders (Natural Language)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjpbIlJFR19VU0VSIl0sInN1YiI6ImFydW5AdGVzdC5jb20iLCJpYXQiOjE3NDYzODQ4NDgsImV4cCI6MTc0NjM4NDk2OH0.YUGnEkNyr94ZgwkDDCQJ1yxVmOSjbMCtBaVwiym_Gjk",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "Get me all the orders",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/elastic/query",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"elastic",
+						"query"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Setup Elastic Mapping",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"mappings\": {\r\n    \"properties\": {\r\n        \"id\": {\r\n        \"type\": \"keyword\"\r\n        },\r\n        \"productName\": {\r\n        \"type\": \"text\",\r\n        \"fields\": {\r\n            \"keyword\": {\r\n            \"type\": \"keyword\",\r\n            \"ignore_above\": 256\r\n            }\r\n        }\r\n        },\r\n        \"productQty\": {\r\n        \"type\": \"integer\"\r\n        },\r\n        \"productPrice\": {\r\n        \"type\": \"double\"\r\n        },\r\n        \"productDescription\": {\r\n        \"type\": \"text\"\r\n        },\r\n        \"createdTime\": {\r\n        \"type\": \"date\"\r\n        },\r\n        \"updatedTime\": {\r\n        \"type\": \"date\"\r\n        }\r\n    }\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9200/orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9200",
+					"path": [
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Setup Debezium Source Connector",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"postgres-to-kafka-connector\",\r\n    \"config\": {\r\n        \"connector.class\": \"io.debezium.connector.postgresql.PostgresConnector\",\r\n        \"database.hostname\": \"postgres\",\r\n        \"database.port\": \"5432\",\r\n        \"database.user\": \"postgres\",\r\n        \"database.password\": \"password\",\r\n        \"database.dbname\" : \"querybackend\",\r\n        \"topic.prefix\": \"connector\",\r\n        \"tasks.max\": \"1\",\r\n        \"schemas.enable\": \"false\",\r\n        \"schema.include.list\": \"public\",\r\n        \"table.include.list\": \"public.orders\",\r\n        \"signal.data.collection\": \"public.debezium_signal\",\r\n        \"key.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\r\n        \"key.converter.schemas.enable\": false,\r\n        \"value.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\r\n        \"value.converter.schemas.enable\": false,\r\n        \"auto.register.schemas\": true,\r\n        \"topic.creation.default.replication.factor\": 1,\r\n        \"topic.creation.default.partitions\": 1,\r\n        \"transforms\": \"extractlatest\",\r\n        \"transforms.extractlatest.type\": \"org.apache.kafka.connect.transforms.ExtractField$Value\",\r\n        \"transforms.extractlatest.field\": \"after\",\r\n        \"time.precision.mode\": \"connect\",\r\n        \"decimal.handling.mode\": \"double\",\r\n        \"heartbeat.interval.ms\": \"1800000\",\r\n        \"snapshot.mode\": \"initial\",\r\n        \"plugin.name\": \"pgoutput\",\r\n        \"slot.name\" : \"query_slot_orders_01\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8084/connectors",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8084",
+					"path": [
+						"connectors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove Debezium Source Connector",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8084/connectors/postgres-to-kafka-connector/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8084",
+					"path": [
+						"connectors",
+						"postgres-to-kafka-connector",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Setup Confluent Sink Connector",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"elasticsearch-sink-connector\",\r\n  \"config\": {\r\n    \"connector.class\": \"io.confluent.connect.elasticsearch.ElasticsearchSinkConnector\",\r\n    \"tasks.max\": \"1\",\r\n    \"topics\": \"connector.public.orders\",\r\n    \"schemas.enable\": false,\r\n    \"schema.ignore\": true,\r\n    \"key.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\r\n    \"key.converter.schemas.enable\": false,    \r\n    \"value.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\r\n    \"value.converter.schemas.enable\": false,\r\n    \"type.name\": \"_doc\",\r\n    \"key.ignore\": true,\r\n    \"index\": \"orders\",\r\n    \"connection.url\": \"http://elasticsearch:9200\"\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8083/connectors",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"connectors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove Confluent Sink Connector",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8083/connectors/elasticsearch-sink-connector/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"connectors",
+						"elasticsearch-sink-connector",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
