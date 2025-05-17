@@ -1,10 +1,15 @@
 package com.arunbalachandran.queryelasticspringai.service;
 
+import com.arunbalachandran.queryelasticspringai.dto.OrderDTO;
+import com.arunbalachandran.queryelasticspringai.mapper.ElasticMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -39,11 +44,12 @@ public class PromptService {
      * @param userQuery
      * @return
      */
-    public String processPrompt(String userQuery) {
+    public List<OrderDTO> processPrompt(String userQuery) {
         String fullPrompt = basePrompt + "\nUser query: " + userQuery;
         log.info("Prompt being used: {}", fullPrompt);
         String elasticQuery = chatModel.call(fullPrompt);
         log.info("Elastic query: {}", elasticQuery);
-        return elasticsearchService.search(elasticQuery);
+        Map<String, Object> response = elasticsearchService.search(elasticQuery);
+        return ElasticMapper.mapToOrderDTO(response);
     }
 }

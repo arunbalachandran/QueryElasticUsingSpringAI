@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+@CrossOrigin("http://localhost:5173")
 @RestController
 @RequestMapping("/api/v1/orders")
 public class OrderController {

@@ -8,6 +8,8 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Map;
+
 @Service
 public class ElasticsearchService {
 
@@ -26,14 +28,14 @@ public class ElasticsearchService {
         );
     }
 
-    public String search(String query) {
+    public Map<String, Object> search(String query) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> request = new HttpEntity<>(query, headers);
         return restTemplate.postForObject(
                 elasticsearchUrl + "/" + INDEX_NAME + "/_search",
             request,
-            String.class
+            Map.class
         );
     }
 } 

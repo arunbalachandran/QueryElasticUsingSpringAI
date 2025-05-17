@@ -51,6 +51,9 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     ports:
       - "2181:2181"
+    volumes:
+      - zk_data:/var/lib/zookeeper/data
+      - zk_txn_logs:/var/lib/zookeeper/log
     networks:
       - dockernet
 
@@ -65,9 +68,10 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     ports:
       - "9092:9092"
+    volumes:
+      - kafka_data:/var/lib/kafka/data
     networks:
       - dockernet
-
 
   debezium-connect:
     image: quay.io/debezium/connect:3.0.0.Final
@@ -142,6 +146,9 @@ services:
 volumes:
   postgres_data:
   es_data:
+  zk_data:
+  zk_txn_logs:
+  kafka_data:
 
 networks:
   dockernet:
