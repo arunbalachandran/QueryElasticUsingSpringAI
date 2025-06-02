@@ -28,4 +28,8 @@ public class OrderService {
         return orderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException(String.format("Order not found with id: %s", id)));
     }
+
+    public void deleteOrderById(UUID id) {
+        orderRepository.deleteById(id);
+    }
 }

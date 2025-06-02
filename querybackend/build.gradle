@@ -29,7 +29,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-logging'
 	implementation 'org.springframework.ai:spring-ai-starter-model-openai'
 
-	implementation 'jakarta.validation:jakarta.validation-api'
 	implementation 'org.flywaydb:flyway-core'
 	implementation 'org.flywaydb:flyway-database-postgresql'
 	implementation 'io.lettuce:lettuce-core'
